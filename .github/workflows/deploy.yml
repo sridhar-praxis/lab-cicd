@@ -18,13 +18,15 @@ jobs:
       - name: 'Login to Azure'
         uses: azure/login@v1
         with:
-          credentials: ${{ secrets.AZURE_CREDENTIALS }}  # Secret holding Service Principal credentials
+          client-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}  # Extract clientId from the credentials JSON
+          tenant-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}  # Extract tenantId from the credentials JSON
+          subscription-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}  # Extract subscriptionId from the credentials JSON
 
       # Build and push Docker image to ACR
       - name: 'Build and Push Docker image'
         run: |
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-app:latest .
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-app:latest
+          docker build -t ${{ fromJson(secrets.AZURE_CREDENTIALS).acrName }}.azurecr.io/fastapi-app:latest .
+          docker push ${{ fromJson(secrets.AZURE_CREDENTIALS).acrName }}.azurecr.io/fastapi-app:latest
 
       # Deploy to Azure Web App
       - name: 'Deploy to Azure Web App'
@@ -32,4 +34,4 @@ jobs:
         with:
           app-name: trywebappcicd  # Name of the Web App
           slot-name: production    # Use "production" if deploying to the main slot
-          images: ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-app:latest  # Image to deploy
+          images: ${{ fromJson(secrets.AZURE_CREDENTIALS).acrName }}.azurecr.io/fastapi-app:latest  # Image to deploy
