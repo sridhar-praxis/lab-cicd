@@ -4,4 +4,4 @@ app = FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello, CI/CD with FastAPI third update!"}
+    return {"message": "Hello, CI/CD with FastAPI fourth update!"}
