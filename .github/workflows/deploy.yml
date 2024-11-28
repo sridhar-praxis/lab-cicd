@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write  # Granting write permissions for id-token
+
     steps:
       # Checkout code
       - name: Checkout code
@@ -18,11 +21,12 @@ jobs:
       - name: 'Login to Azure'
         uses: azure/login@v1
         with:
-          client-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}  # Extract clientId from the credentials JSON
-          tenant-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}  # Extract tenantId from the credentials JSON
-          subscription-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}  # Extract subscriptionId from the credentials JSON
+          client-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
+          tenant-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
+          subscription-id: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+          client-secret: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
 
-      # Build and push Docker image to ACR
+      # Build and Push Docker image to ACR
       - name: 'Build and Push Docker image'
         run: |
           docker build -t ${{ fromJson(secrets.AZURE_CREDENTIALS).acrName }}.azurecr.io/fastapi-app:latest .
