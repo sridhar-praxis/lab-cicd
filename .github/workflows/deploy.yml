@@ -41,3 +41,7 @@ jobs:
     - name: Deploy to Azure Web App
       run: |
         az webapp config container set --name ${{ secrets.WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --docker-custom-image-name ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-cicd:latest
+
+    - name: Restart Azure Web App
+      run: |
+        az webapp restart --name ${{ secrets.WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }}
