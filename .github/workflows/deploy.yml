@@ -29,13 +29,6 @@ jobs:
         docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-cicd:latest .
         docker push ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-cicd:latest
 
-    - name: Debug the Azure CLI command
-      run: |
-        echo "WEBAPP_NAME: ${{ secrets.WEBAPP_NAME }}"
-        echo "RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}"
-        echo "PLAN: ${{ secrets.AZURE_PLAN }}"
-        echo "ACR_NAME: ${{ secrets.ACR_NAME }}
-        
     - name: Log in to Azure
       uses: azure/login@v1
       with:
