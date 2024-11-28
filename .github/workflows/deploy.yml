@@ -1,0 +1,42 @@
+name: CI/CD Deployment to Azure
+
+on:
+  push:
+    branches:
+      - main  # This will trigger the workflow when changes are pushed to the main branch.
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Use an Ubuntu runner
+
+    steps:
+      # Step 1: Checkout code from GitHub
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Login to Azure Container Registry (ACR)
+      - name: Login to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_NAME }}.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # Step 4: Build and push Docker image to ACR
+      - name: Build and push Docker image to ACR
+        run: |
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-app:latest .
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-app:latest
+
+      # Step 5: Deploy the Docker image to Azure Web App
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.WEB_APP_NAME }}  # Azure Web App name
+          slot-name: 'production'  # Deployment slot (optional)
+          images: ${{ secrets.ACR_NAME }}.azurecr.io/fastapi-app:latest
+
